@@ -1,8 +1,20 @@
 <div class="container-fluid" id="background-container">
   <div id="auth-container">
     <div class="row">
-      <div class="col-4" id="auth-form">
-        The Auth Form <br>Will Go Here
+      <div class="col" id="auth-form" style="background: rgba(242, 241, 239, .85); padding: 1rem">
+        <form [formGroup]="authForm" (ngSubmit)="onSubmit()" >
+          <div class="form-group">
+            <label for="email" style="justify-content: center"><h5>E-Mail</h5></label>
+            <input type="email" id="email" class="form-control" formControlName="email">
+          </div>
+          <div class="form-group">
+            <label for="password" style="justify-content: center"><h5>Password</h5></label>
+            <input type="password" id="password" class="form-control" formControlName="password">
+          </div>
+          <div>
+            <button class="btn btn-outline-dark" [disabled]="!authForm.valid">Log In</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
