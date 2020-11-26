@@ -1,0 +1,7 @@
+#background-container {
+  background-image: url(../assets/images/mountain-siloutte-background.jpg);
+  height: 100%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
