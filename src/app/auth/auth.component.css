@@ -1,0 +1,17 @@
+#background-container {
+  background-image: url(../../assets/images/lake-from-deck-background-edited.jpg);
+  height: 100%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+#auth-container {
+  justify-content: center;
+  display: flex;
+  padding-top: 5%;
+}
+
+#auth-form {
+  background: aliceblue;
+}
