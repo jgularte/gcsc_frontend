@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-light fixed-top" style="background: rgba(242, 241, 239, .85)">
+<nav class="navbar navbar-expand-lg navbar-light" [ngClass]="navStyle">
 
   <div class="container-fluid">
 
@@ -26,7 +26,7 @@
           <a class="nav-link"><h5>Photos</h5></a>
         </li>
         <li routerLink="/notes" routerLinkActive="active" class="nav-item">
-          <a class="nav-link"><h5>Notes</h5></a>
+          <a class="nav-link"><h5>Message Board</h5></a>
         </li>
       </ul>
     </div>

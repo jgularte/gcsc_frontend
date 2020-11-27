@@ -1,4 +1,4 @@
-<div class="row text-center">
+<div class="row text-center mt-3">
   <div class="col-md-4">
     <div class="btn-group">
       <div
@@ -15,7 +15,7 @@
         mwlCalendarToday
         [(viewDate)]="viewDate"
       >
-        Today
+        Current
       </div>
       <div
         class="btn btn-primary"
@@ -29,38 +29,12 @@
     </div>
   </div>
   <div class="col-md-4">
-    <h3>{{ viewDate | calendarDate:(view + 'ViewTitle'):'en' }}</h3>
-  </div>
-  <div class="col-md-4">
-    <div class="btn-group">
-      <div
-        class="btn btn-primary"
-        (click)="setView(CalendarView.Month)"
-        [class.active]="view === CalendarView.Month"
-      >
-        Month
-      </div>
-      <div
-        class="btn btn-primary"
-        (click)="setView(CalendarView.Week)"
-        [class.active]="view === CalendarView.Week"
-      >
-        Week
-      </div>
-      <div
-        class="btn btn-primary"
-        (click)="setView(CalendarView.Day)"
-        [class.active]="view === CalendarView.Day"
-      >
-        Day
-      </div>
-    </div>
+    <h3><u>{{ viewDate | calendarDate:(view + 'ViewTitle'):'en' }}</u></h3>
   </div>
 </div>
-<br />
-<div [ngSwitch]="view">
+<br/>
+<div class="ml-lg-5 pl-lg-5 mr-lg-5 pr-lg-5">
   <mwl-calendar-month-view
-    *ngSwitchCase="CalendarView.Month"
     [viewDate]="viewDate"
     [events]="events"
     [refresh]="refresh"
@@ -70,24 +44,6 @@
     (eventTimesChanged)="eventTimesChanged($event)"
   >
   </mwl-calendar-month-view>
-  <mwl-calendar-week-view
-    *ngSwitchCase="CalendarView.Week"
-    [viewDate]="viewDate"
-    [events]="events"
-    [refresh]="refresh"
-    (eventClicked)="handleEvent('Clicked', $event.event)"
-    (eventTimesChanged)="eventTimesChanged($event)"
-  >
-  </mwl-calendar-week-view>
-  <mwl-calendar-day-view
-    *ngSwitchCase="CalendarView.Day"
-    [viewDate]="viewDate"
-    [events]="events"
-    [refresh]="refresh"
-    (eventClicked)="handleEvent('Clicked', $event.event)"
-    (eventTimesChanged)="eventTimesChanged($event)"
-  >
-  </mwl-calendar-day-view>
 </div>
 
 <!-- Everything you see below is just for the demo, you don't need to include it in your app -->
@@ -128,14 +84,14 @@
       <td>
         <input
           type="color"
-          [(ngModel)]="event.color.primary"
+          [(ngModel)]="event.color!.primary"
           (change)="refresh.next()"
         />
       </td>
       <td>
         <input
           type="color"
-          [(ngModel)]="event.color.secondary"
+          [(ngModel)]="event.color!.secondary"
           (change)="refresh.next()"
         />
       </td>
@@ -143,12 +99,8 @@
         <input
           class="form-control"
           type="text"
-          mwlFlatpickr
           [(ngModel)]="event.start"
           (ngModelChange)="refresh.next()"
-          [altInput]="true"
-          [convertModelValue]="true"
-          [enableTime]="true"
           dateFormat="Y-m-dTH:i"
           altFormat="F j, Y H:i"
           placeholder="Not set"
@@ -158,12 +110,8 @@
         <input
           class="form-control"
           type="text"
-          mwlFlatpickr
           [(ngModel)]="event.end"
           (ngModelChange)="refresh.next()"
-          [altInput]="true"
-          [convertModelValue]="true"
-          [enableTime]="true"
           dateFormat="Y-m-dTH:i"
           altFormat="F j, Y H:i"
           placeholder="Not set"

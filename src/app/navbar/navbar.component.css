@@ -1,0 +1,12 @@
+.opaqueOverlay {
+  background: rgba(242, 241, 239, .85);
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1030;
+}
+
+.standardHeader {
+  background: rgba(242, 241, 239, 1);
+}

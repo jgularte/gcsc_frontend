@@ -1,10 +1,9 @@
-import {Component, ViewChild, TemplateRef, ChangeDetectionStrategy, OnInit} from '@angular/core';
-import {startOfDay, endOfDay, subDays, addDays, endOfMonth, isSameDay, isSameMonth, addHours} from 'date-fns';
+import {ChangeDetectionStrategy, Component, TemplateRef, ViewChild} from '@angular/core';
+import {addDays, addHours, endOfDay, endOfMonth, isSameDay, isSameMonth, startOfDay, subDays} from 'date-fns';
 import {Subject} from 'rxjs';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {CalendarEvent, CalendarEventAction, CalendarEventTimesChangedEvent, CalendarView} from 'angular-calendar';
-import {Router} from '@angular/router';
+import {environment} from '../../environments/environment';
 
 const colors = {
   red: {
@@ -26,7 +25,8 @@ const colors = {
   templateUrl: './calendar-page.component.html',
   styleUrls: [
     './calendar-page.component.css'
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CalendarPageComponent {
   @ViewChild('modalContent', {static: true}) modalContent: TemplateRef<any> | undefined;
@@ -62,7 +62,8 @@ export class CalendarPageComponent {
 
   refresh: Subject<any> = new Subject();
 
-  events: CalendarEvent[] = [
+  events: CalendarEvent[] = [];
+  prodEvents: CalendarEvent[] = [
     {
       start: subDays(startOfDay(new Date()), 1),
       end: addDays(new Date(), 1),
@@ -103,9 +104,32 @@ export class CalendarPageComponent {
     },
   ];
 
-  activeDayIsOpen = true;
+  activeDayIsOpen = false;
 
   constructor(private modal: NgbModal) {
+    if (environment.environment === 'local') {
+      this.events = this.convertReservationsToEvent(require('../../../test/local_data/reservations.json'));
+    } else {
+      this.events = this.prodEvents;
+    }
+  }
+
+  convertReservationsToEvent(rawData: object): CalendarEvent[] {
+    console.log(rawData);
+    return [
+      {
+        start: addHours(startOfDay(new Date()), 2),
+        end: addHours(new Date(), 2),
+        title: 'A draggable and resizable event',
+        color: colors.yellow,
+        actions: this.actions,
+        resizable: {
+          beforeStart: true,
+          afterEnd: true,
+        },
+        draggable: true,
+      }
+    ];
   }
 
   dayClicked({date, events}: { date: Date; events: CalendarEvent[] }): void {
