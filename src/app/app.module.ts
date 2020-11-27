@@ -5,6 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { NavbarComponent } from './navbar/navbar.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -13,10 +14,11 @@ import { NavbarComponent } from './navbar/navbar.component';
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     HttpClientModule,
     AppRoutingModule
   ],
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

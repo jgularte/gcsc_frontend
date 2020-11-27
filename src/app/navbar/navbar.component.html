@@ -3,7 +3,7 @@
   <div class="container-fluid">
 
     <!-- Navbar brand -->
-    <a class="navbar-brand" href="#"><h2>Gularte Cabin</h2></a>
+    <a class="navbar-brand" routerLink="/calendar"><h2>Gularte Cabin</h2></a>
 
     <!-- Collapse button -->
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
@@ -16,17 +16,17 @@
 
       <!-- Links -->
       <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
-          <a class="nav-link" href="#"><h5>Authenticate</h5></a>
+        <li routerLink="/authenticate" routerLinkActive="active" class="nav-item">
+          <a class="nav-link"><h5>Authenticate</h5></a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#"><h5>Calendar</h5></a>
+        <li routerLink="/calendar" routerLinkActive="active" class="nav-item">
+          <a class="nav-link"><h5>Calendar</h5></a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#"><h5>Photos</h5></a>
+        <li routerLink="/photos" routerLinkActive="active" class="nav-item">
+          <a class="nav-link"><h5>Photos</h5></a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#"><h5>Notes</h5></a>
+        <li routerLink="/notes" routerLinkActive="active" class="nav-item">
+          <a class="nav-link"><h5>Notes</h5></a>
         </li>
       </ul>
     </div>
