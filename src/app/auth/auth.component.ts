@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
+import {AuthService} from '../services/auth.service';
 
 @Component({
   selector: 'app-auth',
@@ -13,7 +14,7 @@ export class AuthComponent implements OnInit {
 
   authForm: FormGroup;
 
-  constructor(private router: Router) {
+  constructor(private authService: AuthService) {
     this.authForm = new FormGroup({});
   }
 
@@ -29,6 +30,6 @@ export class AuthComponent implements OnInit {
   }
 
   onSubmit(): void {
-    console.log('submit');
+    this.authService.authenticate(this.authForm.value.username, this.authForm.value.password);
   }
 }
