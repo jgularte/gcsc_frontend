@@ -42,7 +42,7 @@
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
+                  "with": "src/environments/environment.production.ts"
                 }
               ],
               "optimization": true,
@@ -50,6 +50,33 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ]
+            },
+            "sandbox": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.sandbox.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": false,
               "vendorChunk": false,
               "buildOptimizer": true,
               "budgets": [
@@ -91,6 +118,33 @@
                   "maximumError": "4kb"
                 }
               ]
+            },
+            "local_mock": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.local_mock.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": false,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ]
             }
           }
         },
@@ -103,8 +157,14 @@
             "production": {
               "browserTarget": "gcsc-frontend:build:production"
             },
+            "sandbox": {
+              "browserTarget": "gcsc-frontend:build:sandbox"
+            },
             "local": {
               "browserTarget": "gcsc-frontend:build:local"
+            },
+            "local_mock": {
+              "browserTarget": "gcsc-frontend:build:local_mock"
             }
           }
         },

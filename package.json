@@ -5,6 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "start_local": "ng serve --configuration=local",
+    "start_local_mock": "ng serve --configuration=local_mock",
+    "start_sandbox": "ng serve --configuration=sandbox",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",

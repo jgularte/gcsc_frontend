@@ -1,4 +1,4 @@
 export const environment = {
-  environment: 'local',
+  environment: 'sandbox',
   production: false
 };
