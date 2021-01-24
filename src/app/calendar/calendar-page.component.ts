@@ -1,13 +1,20 @@
-import {ChangeDetectionStrategy, Component, TemplateRef, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, TemplateRef, ViewChild, ViewEncapsulation} from '@angular/core';
 import {addDays, addHours, endOfDay, endOfMonth, isSameDay, isSameMonth, startOfDay, subDays} from 'date-fns';
 import {Subject} from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {CalendarEvent, CalendarEventAction, CalendarEventTimesChangedEvent, CalendarView} from 'angular-calendar';
-import {environment} from '../../environments/environment';
+import {
+  CalendarEvent,
+  CalendarEventAction,
+  CalendarEventTimesChangedEvent,
+  CalendarView,
+  CalendarMonthViewDay,
+  CalendarDateFormatter
+} from 'angular-calendar';
 import {ReservationsService} from '../services/reservations.service';
 import {ReservationsModel} from '../models/reservations.model';
 import {UserInfoService} from '../services/user-info.service';
 import {UserInfoModel} from '../models/user-info.model';
+import {CustomDateFormatter} from "./custom-date-formatter.provider";
 
 const colors = {
   red: {
@@ -29,6 +36,13 @@ const colors = {
   templateUrl: './calendar-page.component.html',
   styleUrls: [
     './calendar-page.component.css'
+  ],
+  encapsulation: ViewEncapsulation.None,
+  providers: [
+    {
+      provide: CalendarDateFormatter,
+      useClass: CustomDateFormatter
+    }
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -68,29 +82,31 @@ export class CalendarPageComponent {
   constructor(private modal: NgbModal,
               private reservationsService: ReservationsService,
               private userInfoService: UserInfoService) {
-    this.userInfo = this.userInfoService.getUserInfo();
     this.events = this.convertReservationsToEvents(this.reservationsService.getReservations());
   }
 
   convertReservationsToEvents(rawData: ReservationsModel[]): CalendarEvent[] {
     const builtEvents = [];
-    let singleUserInfo: UserInfoModel;
+    let resUserInfo: UserInfoModel;
     for (const res of rawData) {
       // get the corresponding user info for the given reservation
-      singleUserInfo = this.userInfo.filter(user => user.user_guid === res.user_guid)[0];
+      resUserInfo = this.userInfoService.getUserInfo(res.user_guid)
       builtEvents.push(
         {
           start: startOfDay(new Date(res.epoch_start * 1000)),
           end: startOfDay(new Date(res.epoch_end * 1000)),
           title: `Reservation for ${res.user_guid}`,
           color: {
-            primary: singleUserInfo.primary_color,
-            secondary: singleUserInfo.secondary_color
+            primary: resUserInfo.primary_color,
+            secondary: resUserInfo.secondary_color
           },
           actions: this.actions,
           resizable: {
             beforeStart: true,
             afterEnd: true,
+          },
+          meta: {
+            incrementsBadgeTotal: false
           },
           draggable: true,
         }
@@ -99,16 +115,13 @@ export class CalendarPageComponent {
     return builtEvents;
   }
 
+  beforeMonthViewRender({ body }: { body: CalendarMonthViewDay[] }): void {
+    // todo currently nothing, place holding for now
+  }
+
   dayClicked({date, events}: { date: Date; events: CalendarEvent[] }): void {
     if (isSameMonth(date, this.viewDate)) {
-      if (
-        (isSameDay(this.viewDate, date) && this.activeDayIsOpen === true) ||
-        events.length === 0
-      ) {
-        this.activeDayIsOpen = false;
-      } else {
-        this.activeDayIsOpen = true;
-      }
+      this.activeDayIsOpen = !((isSameDay(this.viewDate, date) && this.activeDayIsOpen) || events.length === 0);
       this.viewDate = date;
     }
   }
@@ -150,6 +163,7 @@ export class CalendarPageComponent {
   }
 
   deleteEvent(eventToDelete: CalendarEvent): void {
+    // todo await call to dynamo for successful deletion, handle error
     this.events = this.events.filter((event) => event !== eventToDelete);
   }
 

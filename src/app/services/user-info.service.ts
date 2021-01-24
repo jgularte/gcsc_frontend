@@ -12,11 +12,13 @@ export class UserInfoService {
     if (environment.environment === 'local') {
       this.userInfo = require('../../../test/local_data/user-info.json');
     } else {
-      console.log('TODO');
+      // todo handle all other environments
+      // todo create a user_info dynamo table
+      console.log('TODO Handle Other Environments');
     }
   }
 
-  getUserInfo(): UserInfoModel[] {
-    return this.userInfo;
+  getUserInfo(user_guid: string): UserInfoModel {
+    return this.userInfo.filter(user => user.user_guid === user_guid)[0]
   }
 }

@@ -1,38 +1,47 @@
-<div class="row text-center mt-3">
-  <div class="col-md-4">
-    <div class="btn-group">
-      <div
-        class="btn btn-primary"
-        mwlCalendarPreviousView
-        [view]="view"
-        [(viewDate)]="viewDate"
-        (viewDateChange)="closeOpenMonthViewDay()"
-      >
-        Previous
-      </div>
-      <div
-        class="btn btn-outline-secondary"
-        mwlCalendarToday
-        [(viewDate)]="viewDate"
-      >
-        Current
-      </div>
-      <div
-        class="btn btn-primary"
-        mwlCalendarNextView
-        [view]="view"
-        [(viewDate)]="viewDate"
-        (viewDateChange)="closeOpenMonthViewDay()"
-      >
-        Next
-      </div>
+<div class="row justify-content-center mt-3">
+  <h1><u>{{ viewDate | calendarDate:(view + 'ViewTitle'):'en' }}</u></h1>
+</div>
+
+<div class="row justify-content-center">
+  <div class="btn-group col-12 col-md-3 col-lg-2">
+    <div
+      class="btn btn-primary col-4"
+      mwlCalendarPreviousView
+      [view]="view"
+      [(viewDate)]="viewDate"
+      (viewDateChange)="closeOpenMonthViewDay()"
+    >
+      Previous
+    </div>
+    <div
+      class="btn btn-outline-secondary col-4"
+      mwlCalendarToday
+      [(viewDate)]="viewDate"
+    >
+      Current
+    </div>
+    <div
+      class="btn btn-primary col-4"
+      mwlCalendarNextView
+      [view]="view"
+      [(viewDate)]="viewDate"
+      (viewDateChange)="closeOpenMonthViewDay()"
+    >
+      Next
     </div>
   </div>
-  <div class="col-md-4">
-    <h3><u>{{ viewDate | calendarDate:(view + 'ViewTitle'):'en' }}</u></h3>
-  </div>
 </div>
+
 <br/>
+
+<ng-template #customCellTemplate let-day="day" let-locale="locale">
+  <div class="cal-cell-top">
+    <span class="cal-day-number">
+      {{ day.date | calendarDate:'monthViewDayNumber':locale }}
+    </span>
+  </div>
+</ng-template>
+
 <div class="ml-lg-5 pl-lg-5 mr-lg-5 pr-lg-5">
   <mwl-calendar-month-view
     [viewDate]="viewDate"
@@ -42,16 +51,18 @@
     (dayClicked)="dayClicked($event.day)"
     (eventClicked)="handleEvent('Clicked', $event.event)"
     (eventTimesChanged)="eventTimesChanged($event)"
+    (beforeViewRender)="beforeMonthViewRender($event)"
   >
   </mwl-calendar-month-view>
 </div>
 
 <!-- Everything you see below is just for the demo, you don't need to include it in your app -->
 
-<br /><br /><br />
+<br/><br/><br/>
+
 
 <h3>
-  Edit events
+  Reservations List
   <button class="btn btn-primary float-right" (click)="addEvent()">
     Add new
   </button>
@@ -101,8 +112,6 @@
           type="text"
           [(ngModel)]="event.start"
           (ngModelChange)="refresh.next()"
-          dateFormat="Y-m-dTH:i"
-          altFormat="F j, Y H:i"
           placeholder="Not set"
         />
       </td>
@@ -112,8 +121,6 @@
           type="text"
           [(ngModel)]="event.end"
           (ngModelChange)="refresh.next()"
-          dateFormat="Y-m-dTH:i"
-          altFormat="F j, Y H:i"
           placeholder="Not set"
         />
       </td>

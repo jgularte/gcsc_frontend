@@ -1,0 +1,15 @@
+.cal-day-number {
+  font-size: 1.3em !important;
+}
+
+.cal-day-badge {
+  display: none !important;
+}
+
+.cal-month-view .cal-event {
+  width: 15px;
+  height: 15px;
+  border-radius: 20%;
+  display: inline-block;
+  margin: 2px;
+}

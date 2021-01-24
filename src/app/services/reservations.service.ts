@@ -7,59 +7,40 @@ import {addDays, addHours, endOfMonth, startOfDay, subDays} from 'date-fns';
 
 @Injectable({providedIn: 'root'})
 export class ReservationsService {
-  // prodEvents: CalendarEvent[] = [
-  //   {
-  //     start: subDays(startOfDay(new Date()), 1),
-  //     end: addDays(new Date(), 1),
-  //     title: 'A 3 day event',
-  //     color: colors.red,
-  //     actions: this.actions,
-  //     allDay: true,
-  //     resizable: {
-  //       beforeStart: true,
-  //       afterEnd: true,
-  //     },
-  //     draggable: true,
-  //   },
-  //   {
-  //     start: startOfDay(new Date()),
-  //     title: 'An event with no end date',
-  //     color: colors.yellow,
-  //     actions: this.actions,
-  //   },
-  //   {
-  //     start: subDays(endOfMonth(new Date()), 3),
-  //     end: addDays(endOfMonth(new Date()), 3),
-  //     title: 'A long event that spans 2 months',
-  //     color: colors.blue,
-  //     allDay: true,
-  //   },
-  //   {
-  //     start: addHours(startOfDay(new Date()), 2),
-  //     end: addHours(new Date(), 2),
-  //     title: 'A draggable and resizable event',
-  //     color: colors.yellow,
-  //     actions: this.actions,
-  //     resizable: {
-  //       beforeStart: true,
-  //       afterEnd: true,
-  //     },
-  //     draggable: true,
-  //   },
-  // ];
 
   private reservations: ReservationsModel[] = [];
 
   constructor(private http: HttpClient) {
-    if (environment.environment === 'local') {
+    if (environment.environment === 'local_w_mock') {
+      console.log('getting local reservations with current times.')
       this.reservations = require('../../../test/local_data/reservations.json');
-    } else {
-      console.log('TODO fdgfdsa');
+      // for res_0, will do current_time-5days to current_time-2days;
+      this.reservations[0].epoch_start = subDays(new Date(), 5).getTime() / 1000
+      this.reservations[0].epoch_end = subDays(new Date(), 2).getTime() / 1000
+      // for res_1 will do current_time-2days to current_time+4days;
+      this.reservations[1].epoch_start = subDays(new Date(), 2).getTime() / 1000
+      this.reservations[1].epoch_end = addDays(new Date(), 4).getTime() / 1000
+      // for res_2 will do current_time+1day to current_time+10days;
+      this.reservations[2].epoch_start = addDays(new Date(), 1).getTime() / 1000
+      this.reservations[2].epoch_end = addDays(new Date(), 10).getTime() / 1000
+    } else if (environment.environment === 'local'){
+      // todo handle other environments
+      console.log('TODO Handle Other Environments');
     }
   }
 
   getReservations(): ReservationsModel[] {
     return this.reservations;
+  }
+
+  createReservation(reservation: ReservationsModel) {
+    // todo create reservations in dynamo
+    console.log('TODO Create Reservation');
+  }
+
+  deleteReservation(reservation_id: number) {
+    // todo delete reservations in dynamo
+    console.log('TODO Delete Reservation')
   }
 
 }
