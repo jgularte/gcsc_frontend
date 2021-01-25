@@ -1,11 +1,11 @@
 export const environment = {
-  environment: 'local',
+  environment: 'mock',
   production: false,
-  base_url: "http://localhost:8001",
+  base_url: "",
   endpoints: {
     healthcheck: "/healthcheck",
     auth: "",
     user_info: "",
-    reservations: "/reservations"
+    reservations: "assets/mock_data/reservations.json"
   }
 };

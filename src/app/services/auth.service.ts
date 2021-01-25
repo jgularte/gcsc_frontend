@@ -6,17 +6,9 @@ import {environment} from '../../environments/environment';
 export class AuthService {
   currentUser: any;
 
-  constructor() {
-    console.log(environment.environment);
-  }
+  constructor() {}
 
   authenticate(username: string, password: string): void {
-    console.log('jdklafd');
-    // try {
-    //   this.currentUser = Auth.signIn(username, password);
-    //   console.log(this.currentUser);
-    // } catch (error) {
-    //   console.log(error);
-    // }
+
   }
 }

@@ -9,12 +9,12 @@ export class UserInfoService {
   private userInfo: UserInfoModel[] = [];
 
   constructor(private http: HttpClient) {
-    if (environment.environment === 'local') {
-      this.userInfo = require('../../../test/local_data/user-info.json');
+    if (environment.environment === 'mock') {
+      this.userInfo = require('../../../test/mock_data/user-info.json');
     } else {
       // todo handle all other environments
       // todo create a user_info dynamo table
-      console.log('TODO Handle Other Environments');
+      console.log('[AuthService] TODO Handle Other Environments');
     }
   }
 

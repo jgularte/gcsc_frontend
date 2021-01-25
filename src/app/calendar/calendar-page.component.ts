@@ -79,13 +79,18 @@ export class CalendarPageComponent {
   activeDayIsOpen = false;
   events: CalendarEvent[] = [];
   userInfo: UserInfoModel[] = [];
+
   constructor(private modal: NgbModal,
               private reservationsService: ReservationsService,
               private userInfoService: UserInfoService) {
-    this.events = this.convertReservationsToEvents(this.reservationsService.getReservations());
+
+    this.reservationsService.getReservations()
+      .subscribe(data => {
+        this.events = this.convertReservationsToEvents(data)
+      });
   }
 
-  convertReservationsToEvents(rawData: ReservationsModel[]): CalendarEvent[] {
+  convertReservationsToEvents(rawData: any): CalendarEvent[] {
     const builtEvents = [];
     let resUserInfo: UserInfoModel;
     for (const res of rawData) {
@@ -115,7 +120,7 @@ export class CalendarPageComponent {
     return builtEvents;
   }
 
-  beforeMonthViewRender({ body }: { body: CalendarMonthViewDay[] }): void {
+  beforeMonthViewRender({body}: { body: CalendarMonthViewDay[] }): void {
     // todo currently nothing, place holding for now
   }
 
@@ -126,7 +131,7 @@ export class CalendarPageComponent {
     }
   }
 
-  eventTimesChanged({event, newStart, newEnd }: CalendarEventTimesChangedEvent): void {
+  eventTimesChanged({event, newStart, newEnd}: CalendarEventTimesChangedEvent): void {
     this.events = this.events.map((iEvent) => {
       if (iEvent === event) {
         return {

@@ -1,0 +1,23 @@
+[
+  {
+    "reservation_guid": "11111111",
+    "user_guid": "jack.gularte",
+    "epoch_start": 1606508035,
+    "epoch_end": 1606796035,
+    "reservation_type": "open"
+  },
+  {
+    "reservation_guid": "22222222",
+    "user_guid": "kate.gularte",
+    "epoch_start": 1604607235,
+    "epoch_end": 1605471235,
+    "reservation_type": "open"
+  },
+  {
+    "reservation_guid": "22222222",
+    "user_guid": "claire.gularte",
+    "epoch_start": 1605298435,
+    "epoch_end": 1606594435,
+    "reservation_type": "open"
+  }
+]

@@ -119,11 +119,11 @@
                 }
               ]
             },
-            "local_mock": {
+            "mock": {
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.local_mock.ts"
+                  "with": "src/environments/environment.mock.ts"
                 }
               ],
               "optimization": true,
@@ -163,8 +163,8 @@
             "local": {
               "browserTarget": "gcsc-frontend:build:local"
             },
-            "local_mock": {
-              "browserTarget": "gcsc-frontend:build:local_mock"
+            "mock": {
+              "browserTarget": "gcsc-frontend:build:mock"
             }
           }
         },
