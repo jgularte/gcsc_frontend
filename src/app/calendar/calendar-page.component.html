@@ -51,88 +51,104 @@
     (dayClicked)="dayClicked($event.day)"
     (eventClicked)="handleEvent('Clicked', $event.event)"
     (eventTimesChanged)="eventTimesChanged($event)"
-    (beforeViewRender)="beforeMonthViewRender($event)"
   >
   </mwl-calendar-month-view>
 </div>
 
 <!-- Everything you see below is just for the demo, you don't need to include it in your app -->
 
-<br/><br/><br/>
+<br/><br/>
 
+<div class="row">
+  <div class="col-12 col-lg-6 ml-lg-5 pl-lg-5 mr-lg-5 pr-lg-5">
+    <h3>
+      <u>Reservations List</u>
+    </h3>
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+        <tr>
+          <th>Title</th>
+          <th>Color</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Remove</th>
+        </tr>
+        </thead>
 
-<h3>
-  Reservations List
-  <button class="btn btn-primary float-right" (click)="addEvent()">
-    Add new
-  </button>
-  <div class="clearfix"></div>
-</h3>
-
-<div class="table-responsive">
-  <table class="table table-bordered">
-    <thead>
-    <tr>
-      <th>Title</th>
-      <th>Primary color</th>
-      <th>Secondary color</th>
-      <th>Starts at</th>
-      <th>Ends at</th>
-      <th>Remove</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    <tr *ngFor="let event of events">
-      <td>
-        <input
-          type="text"
-          class="form-control"
-          [(ngModel)]="event.title"
-          (keyup)="refresh.next()"
-        />
-      </td>
-      <td>
-        <input
-          type="color"
-          [(ngModel)]="event.color!.primary"
-          (change)="refresh.next()"
-        />
-      </td>
-      <td>
-        <input
-          type="color"
-          [(ngModel)]="event.color!.secondary"
-          (change)="refresh.next()"
-        />
-      </td>
-      <td>
-        <input
-          class="form-control"
-          type="text"
-          [(ngModel)]="event.start"
-          (ngModelChange)="refresh.next()"
-          placeholder="Not set"
-        />
-      </td>
-      <td>
-        <input
-          class="form-control"
-          type="text"
-          [(ngModel)]="event.end"
-          (ngModelChange)="refresh.next()"
-          placeholder="Not set"
-        />
-      </td>
-      <td>
-        <button class="btn btn-danger" (click)="deleteEvent(event)">
-          Delete
-        </button>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+        <tbody>
+        <tr *ngFor="let event of events">
+          <td>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="event.title"
+              (keyup)="refresh.next()"
+            />
+          </td>
+          <td>
+            <input
+              type="color"
+              [(ngModel)]="event.color!.primary"
+              (change)="refresh.next()"
+            />
+          </td>
+          <td>
+            <input
+              class="form-control"
+              type="text"
+              [(ngModel)]="event.start"
+              (ngModelChange)="refresh.next()"
+              placeholder="Not set"
+            />
+          </td>
+          <td>
+            <input
+              class="form-control"
+              type="text"
+              [(ngModel)]="event.end"
+              (ngModelChange)="refresh.next()"
+              placeholder="Not set"
+            />
+          </td>
+          <td>
+            <button class="btn btn-danger" (click)="deleteEvent(event)">
+              Delete
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="col-12 col-lg-5">
+    <h3>
+      <u>Add Reservation</u>
+    </h3>
+    <form [formGroup]="addResForm" (ngSubmit)="addFromForm()">
+      <div class="row">
+        <div class="col-4 form-group">
+          <label for="start_date"><h5>Start Date</h5></label>
+          <input type="date" id="start_date" class="form-control" formControlName="start_date">
+        </div>
+        <div class="col-4 form-group">
+          <label for="end_date"><h5>End Date</h5></label>
+          <input type="date" id="end_date" class="form-control" formControlName="end_date">
+        </div>
+        <div class="col-4 form-group">
+          <label for="type"><h5>Reservation Type</h5></label>
+          <input type="text" id="type" class="form-control" formControlName="type">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-4">
+          <button class="btn btn-primary" type="submit" [disabled]="!addResForm.valid">Add</button>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
+
 
 <ng-template #modalContent let-close="close">
   <div class="modal-header">
