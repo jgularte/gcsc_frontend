@@ -9,7 +9,7 @@ export class AuthService {
 
   constructor() {
     // todo this is temporary until I get to work on the auth page
-    this.api_token = "gobengals";
+    this.api_token = "f029";
     this.currentUser = "jack.gularte";
   }
 
@@ -23,5 +23,12 @@ export class AuthService {
 
   getCurrentUser(): string {
     return this.currentUser;
+  }
+
+  isCurrentUser(userGuid: string): boolean {
+    if (userGuid === this.currentUser) {
+      return true;
+    }
+    return false;
   }
 }

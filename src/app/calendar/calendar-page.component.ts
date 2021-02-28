@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, OnInit, TemplateRef, ViewChild, ViewEncapsulation} from '@angular/core';
 import {addDays, addHours, endOfDay, endOfMonth, isSameDay, isSameMonth, startOfDay, subDays} from 'date-fns';
-import {Subject} from 'rxjs';
-import {environment} from "../../environments/environment";
+import {Subject, Subscription} from 'rxjs';
+import {environment} from '../../environments/environment';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {
   CalendarEvent,
@@ -13,26 +13,12 @@ import {
 } from 'angular-calendar';
 import {ReservationsService} from '../services/reservations.service';
 import {ReservationsModel} from '../models/reservations.model';
+import {DataStorageService} from '../services/data-storage.service';
 import {UserInfoService} from '../services/user-info.service';
 import {UserInfoModel} from '../models/user-info.model';
-import {CustomDateFormatter} from "./custom-date-formatter.provider";
-import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {AuthService} from "../services/auth.service";
-
-const colors = {
-  red: {
-    primary: '#ad2121',
-    secondary: '#FAE3E3',
-  },
-  blue: {
-    primary: '#1e90ff',
-    secondary: '#D1E8FF',
-  },
-  yellow: {
-    primary: '#e3bc08',
-    secondary: '#FDF1BA',
-  },
-};
+import {CustomDateFormatter} from './custom-date-formatter.provider';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {AuthService} from '../services/auth.service';
 
 @Component({
   selector: 'app-calendar',
@@ -82,73 +68,70 @@ export class CalendarPageComponent implements OnInit {
   activeDayIsOpen = false;
   events: CalendarEvent[] = [];
   userInfo: UserInfoModel[] = [];
-
+  // reservations
+  reservations: ReservationsModel[] = [];
+  reservationsSub: Subscription = new Subscription();
   // form
   addResForm: FormGroup;
 
   constructor(private modal: NgbModal,
+              private dataStorageService: DataStorageService,
               private reservationsService: ReservationsService,
               private authService: AuthService,
               private userInfoService: UserInfoService) {
+
     this.addResForm = new FormGroup(
       {
         user: new FormControl(this.authService.getCurrentUser(), Validators.required),
-        start_date: new FormControl("", Validators.required),
-        end_date: new FormControl("", Validators.required),
-        type: new FormControl("", Validators.required)
+        start_date: new FormControl('', Validators.required),
+        end_date: new FormControl('', Validators.required),
+        type: new FormControl('', Validators.required)
       }
     );
   }
 
-  ngOnInit() {
-    this.reservationsService.getReservations()
-      .subscribe(data => {
-        if (environment.environment === 'mock') {
-          data = this.updateLocalData(data);
-        }
-        if (data.length >= 1) {
-          console.log("hello")
-          for (const res of data) {
+  ngOnInit(): void {
+    this.reservationsSub = this.reservationsService.reservationsChanges
+      .subscribe(
+        (reservations: ReservationsModel[]) => {
+          if (environment.environment === 'mock') {
+            reservations = this.updateLocalData(reservations);
+          }
+          this.events = [];
+          for (const res of reservations) {
             this.addEvent(this.convertReservationToEvent(res));
           }
+          this.reservations = reservations;
         }
-      });
-  }
-
-  updateLocalData(rawData: ReservationsModel[]): ReservationsModel[] {
-    // for res_0, will do current_time-5days to current_time-2days;
-    rawData[0].epoch_start = subDays(new Date(), 5).getTime() / 1000
-    rawData[0].epoch_end = subDays(new Date(), 2).getTime() / 1000
-    // for res_1 will do current_time-2days to current_time+4days;
-    rawData[1].epoch_start = subDays(new Date(), 2).getTime() / 1000
-    rawData[1].epoch_end = addDays(new Date(), 4).getTime() / 1000
-    // for res_2 will do current_time+1day to current_time+10days;
-    rawData[2].epoch_start = addDays(new Date(), 1).getTime() / 1000
-    rawData[2].epoch_end = addDays(new Date(), 10).getTime() / 1000
-    return rawData
+      );
+    this.dataStorageService.fetchReservations().subscribe();
+    this.reservations = this.reservationsService.getReservations();
   }
 
   addFromForm(): void {
     // todo check with reservation service to make sure its still available
     // if so, convert Form to ReservationModel
     const resModel: ReservationsModel = {
-      reservation_guid: "0",
+      reservation_guid: '0',
       user_guid: this.authService.getCurrentUser(),
       epoch_start: (new Date(this.addResForm.value.start_date)).getTime() / 1000,
       epoch_end: (new Date(this.addResForm.value.end_date)).getTime() / 1000,
       reservation_type: this.addResForm.value.type
+    };
+    if (this.reservationsService.validateReservation(resModel)) {
+      this.dataStorageService.storeReservation(resModel);
+    } else {
+      // error message
+      return;
     }
-    this.reservationsService.createReservation(resModel).subscribe();
-    // todo and add reservation to aws via res service
-    // todo if no error, push convert from to CalendarEvent and push onto events array
-    this.addEvent(this.convertReservationToEvent(resModel));
   }
 
   convertReservationToEvent(res: ReservationsModel): CalendarEvent {
     let resUserInfo: UserInfoModel;
     // get the corresponding user info for the given reservation
-    resUserInfo = this.userInfoService.getUserInfo(res.user_guid)
+    resUserInfo = this.userInfoService.getUserInfo(res.user_guid);
     return {
+      id: res.reservation_guid,
       start: startOfDay(new Date(res.epoch_start * 1000)),
       end: startOfDay(new Date(res.epoch_end * 1000)),
       title: `Reservation for ${res.user_guid}`,
@@ -165,25 +148,48 @@ export class CalendarPageComponent implements OnInit {
         incrementsBadgeTotal: false
       },
       draggable: true,
-    }
+    };
   }
 
-  addEvent(new_event: CalendarEvent): void {
+  disableDelete(event: CalendarEvent): boolean {
+    const res = this.getReservationFromEvent(event);
+    return res.user_guid !== this.authService.getCurrentUser();
+  }
+
+  getReservationFromEvent(event: CalendarEvent): ReservationsModel {
+    const res = this.reservations.filter((r) => r.reservation_guid === event.id);
+    // todo some error handling maybe
+    return res[0];
+  }
+
+  addEvent(newEvent: CalendarEvent): void {
     this.events = [
       ...this.events,
-      new_event,
+      newEvent,
     ];
-    this.refresh.next(0)
+    this.refresh.next(0);
   }
 
   deleteEvent(eventToDelete: CalendarEvent): void {
-    // todo await call to dynamo for successful deletion, handle error
-    this.events = this.events.filter((event) => event !== eventToDelete);
+    this.dataStorageService.deleteReservation(this.getReservationFromEvent(eventToDelete));
   }
 
   /*
-    Calendar Helper Functions Below
+    Helper Functions Below
    */
+
+  updateLocalData(rawData: ReservationsModel[]): ReservationsModel[] {
+    // for res_0, will do current_time-5days to current_time-2days;
+    rawData[0].epoch_start = subDays(new Date(), 5).getTime() / 1000;
+    rawData[0].epoch_end = subDays(new Date(), 2).getTime() / 1000;
+    // for res_1 will do current_time-2days to current_time+4days;
+    rawData[1].epoch_start = subDays(new Date(), 2).getTime() / 1000;
+    rawData[1].epoch_end = addDays(new Date(), 4).getTime() / 1000;
+    // for res_2 will do current_time+1day to current_time+10days;
+    rawData[2].epoch_start = addDays(new Date(), 1).getTime() / 1000;
+    rawData[2].epoch_end = addDays(new Date(), 10).getTime() / 1000;
+    return rawData;
+  }
 
   dayClicked({date, events}: { date: Date; events: CalendarEvent[] }): void {
     if (isSameMonth(date, this.viewDate)) {

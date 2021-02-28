@@ -12,7 +12,7 @@ export class UserInfoService {
     this.userInfo = require('../../../test/mock_data/user-info.json');
   }
 
-  getUserInfo(user_guid: string): UserInfoModel {
-    return this.userInfo.filter(user => user.user_guid === user_guid)[0]
+  getUserInfo(userGuid: string): UserInfoModel {
+    return this.userInfo.filter(user => user.user_guid === userGuid)[0];
   }
 }

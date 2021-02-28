@@ -112,7 +112,7 @@
             />
           </td>
           <td>
-            <button class="btn btn-danger" (click)="deleteEvent(event)">
+            <button class="btn btn-danger" (click)="deleteEvent(event)" [disabled]="disableDelete(event)">
               Delete
             </button>
           </td>
@@ -137,7 +137,7 @@
         </div>
         <div class="col-4 form-group">
           <label for="type"><h5>Reservation Type</h5></label>
-          <input type="text" id="type" class="form-control" formControlName="type">
+          <input type="" id="type" class="form-control" formControlName="type">
         </div>
       </div>
       <div class="row">
