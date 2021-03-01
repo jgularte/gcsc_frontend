@@ -4,7 +4,7 @@ import {Subject} from 'rxjs';
 
 @Injectable({providedIn: 'root'})
 export class ReservationsService {
-  public  reservationsChanges = new Subject<ReservationsModel[]>();
+  public reservationsChanges = new Subject<ReservationsModel[]>();
   private reservations: ReservationsModel[] = [];
 
   constructor() {}

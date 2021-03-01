@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {Router} from '@angular/router';
 import {AuthService} from '../services/auth.service';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-auth',
@@ -13,23 +13,28 @@ import {AuthService} from '../services/auth.service';
 export class AuthComponent implements OnInit {
 
   authForm: FormGroup;
+  failedAuthSub = new Subscription();
+  failedAuthWarningMsg = false;
 
   constructor(private authService: AuthService) {
     this.authForm = new FormGroup({});
   }
 
   ngOnInit(): void {
-    const email = '';
-    const password = '';
-
+    // subscribe to the failed auth subject
+    this.failedAuthSub = this.authService.failedAuth
+      .subscribe(() => {
+        this.failedAuthWarningMsg = true;
+      });
+    // init the auth form
     this.authForm = new FormGroup({
-        email: new FormControl(email, Validators.required),
-        password: new FormControl(password, [Validators.required, Validators.minLength(8)])
+        email: new FormControl('', Validators.required),
+        password: new FormControl('', [Validators.required, Validators.minLength(8)])
       }
     );
   }
 
   onSubmit(): void {
-    this.authService.authenticate(this.authForm.value.username, this.authForm.value.password);
+    this.authService.authenticate(this.authForm.value.email, this.authForm.value.password);
   }
 }

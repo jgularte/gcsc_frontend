@@ -3,14 +3,14 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  environment: "base",
+  environment: 'base',
   production: false,
-  base_url: "",
+  base_url: '',
   endpoints: {
-    healthcheck: "",
-    auth: "",
-    user_info: "",
-    reservations: ""
+    healthcheck: '',
+    auth: '',
+    user_info: '',
+    reservations: ''
   }
 };
 
