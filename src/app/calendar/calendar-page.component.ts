@@ -67,10 +67,12 @@ export class CalendarPageComponent implements OnInit {
   refresh: Subject<any> = new Subject();
   activeDayIsOpen = false;
   events: CalendarEvent[] = [];
-  userInfo: UserInfoModel[] = [];
   // reservations
   reservations: ReservationsModel[] = [];
   reservationsSub: Subscription = new Subscription();
+  // user info
+  userInfo: UserInfoModel[] = [];
+  userInfoSub = new Subscription();
   // form
   addResForm: FormGroup;
 
@@ -79,13 +81,11 @@ export class CalendarPageComponent implements OnInit {
               private reservationsService: ReservationsService,
               private authService: AuthService,
               private userInfoService: UserInfoService) {
-
     this.addResForm = new FormGroup(
       {
-        user: new FormControl(this.authService.getCurrentUser(), Validators.required),
+        user: new FormControl('', Validators.required),
         start_date: new FormControl('', Validators.required),
-        end_date: new FormControl('', Validators.required),
-        type: new FormControl('', Validators.required)
+        end_date: new FormControl('', Validators.required)
       }
     );
   }
@@ -93,17 +93,22 @@ export class CalendarPageComponent implements OnInit {
   ngOnInit(): void {
     this.reservationsSub = this.reservationsService.reservationsChanges
       .subscribe(
-        (reservations: ReservationsModel[]) => {
+        async (reservations: ReservationsModel[]) => {
           if (environment.environment === 'mock') {
             reservations = this.updateLocalData(reservations);
           }
           this.events = [];
           for (const res of reservations) {
-            this.addEvent(this.convertReservationToEvent(res));
+            this.addEvent(await this.convertReservationToEvent(res));
           }
           this.reservations = reservations;
         }
       );
+    // when the user's cognito information is loaded in, set the user's guid in the form
+    this.userInfoSub = this.userInfoService.userInfoChanges
+      .subscribe((userInfo: any) => {
+        this.addResForm.controls.user.setValue(userInfo.Username);
+      });
     this.dataStorageService.fetchReservations().subscribe();
     this.reservations = this.reservationsService.getReservations();
   }
@@ -113,28 +118,27 @@ export class CalendarPageComponent implements OnInit {
     // if so, convert Form to ReservationModel
     const resModel: ReservationsModel = {
       reservation_guid: '0',
-      user_guid: this.authService.getCurrentUser(),
+      user_guid: this.userInfoService.currentUserCognitoInfo.Username,
+      display_name: this.userInfoService.currentUserDisplayName,
       epoch_start: (new Date(this.addResForm.value.start_date)).getTime() / 1000,
       epoch_end: (new Date(this.addResForm.value.end_date)).getTime() / 1000,
-      reservation_type: this.addResForm.value.type
     };
     if (this.reservationsService.validateReservation(resModel)) {
       this.dataStorageService.storeReservation(resModel);
     } else {
-      // error message
+      // todo error message
       return;
     }
   }
 
-  convertReservationToEvent(res: ReservationsModel): CalendarEvent {
-    let resUserInfo: UserInfoModel;
-    // get the corresponding user info for the given reservation
-    resUserInfo = this.userInfoService.getUserInfo(res.user_guid);
+  async convertReservationToEvent(res: ReservationsModel): Promise<CalendarEvent> {
+    const resUserInfo = await this.userInfoService.getUserDynamoInfo(res.user_guid);
+    console.warn(resUserInfo);
     return {
       id: res.reservation_guid,
       start: startOfDay(new Date(res.epoch_start * 1000)),
       end: startOfDay(new Date(res.epoch_end * 1000)),
-      title: `Reservation for ${res.user_guid}`,
+      title: `Reservation for ${res.display_name}`,
       color: {
         primary: resUserInfo.primary_color,
         secondary: resUserInfo.secondary_color
@@ -153,7 +157,7 @@ export class CalendarPageComponent implements OnInit {
 
   disableDelete(event: CalendarEvent): boolean {
     const res = this.getReservationFromEvent(event);
-    return res.user_guid !== this.authService.getCurrentUser();
+    return res.user_guid !== this.userInfoService.currentUserCognitoInfo.Username;
   }
 
   getReservationFromEvent(event: CalendarEvent): ReservationsModel {

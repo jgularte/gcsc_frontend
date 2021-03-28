@@ -14,7 +14,7 @@ export class DataStorageService {
     headers: new HttpHeaders(
       {
         'Content-Type': 'application/json',
-        Authorization: this.auth.getAPIToken(),
+        Authorization: 'f029',
       }
     )
   };

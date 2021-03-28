@@ -5,7 +5,7 @@ export const environment = {
   endpoints: {
     healthcheck: '/healthcheck',
     auth: '/authorization',
-    user_info: '',
+    user_info: '/user_info',
     reservations: '/reservations'
   }
 };

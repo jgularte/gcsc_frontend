@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {environment} from '../../environments/environment';
 import {catchError, tap} from 'rxjs/operators';
 import {Observable, of, Subject} from 'rxjs';
@@ -8,35 +8,28 @@ import {Observable, of, Subject} from 'rxjs';
 @Injectable({providedIn: 'root'})
 export class AuthService {
   private currentUser: any;
-  private apiToken = '';
+  private apiToken = 'f029';
   private authURL = `${environment.base_url}${environment.endpoints.auth}`;
   private httpOptions = {
     headers: new HttpHeaders(
       {
         'Content-Type': 'application/json',
-        Authorization: this.getAPIToken(),
+        Authorization: 'f029',
       }
     )
   };
   // todo remove this
-  private cogClientId = '3isa3gbt5oi9j01pos3v0dbqmo';
-  private accessToken = null;
+  private cogClientId = '59alfspomjihv7js74ba2sjbor';
+  private accessToken: string | undefined;
 
+  // subjects
+  public successfulAuth = new Subject<string>();
   public failedAuth = new Subject();
 
-  constructor(private http: HttpClient) {
-    // todo this is temporary until I get to work on the auth page
-    this.apiToken = 'f029';
-    this.currentUser = 'jack.gularte';
-    this.httpOptions = {
-      headers: new HttpHeaders(
-        {
-          'Content-Type': 'application/json',
-          Authorization: this.getAPIToken(),
-        }
-      )
-    };
-  }
+  // state
+  public loggedIn = false;
+
+  constructor(private http: HttpClient) {}
 
   authenticate(email: string, pword: string): void {
     const body = {
@@ -48,20 +41,14 @@ export class AuthService {
       .pipe(
         catchError(this.handleError('signIn')),
         tap((data) => {
-          this.extractAccessToken(data);
+          if (data.AuthenticationResult.AccessToken) {
+            console.log('Access token retrieved from AWS Cognito User Pool.');
+            this.accessToken = data.AuthenticationResult.AccessToken;
+            this.loggedIn = true;
+            this.successfulAuth.next(this.accessToken);
+          }
         })
       ).subscribe();
-  }
-
-  extractAccessToken(cognitoResponse: any): void {
-    if (cognitoResponse.AuthenticationResult.AccessToken) {
-      this.accessToken = cognitoResponse.AuthenticationResult.AccessToken;
-      console.log('Access Token Retrieved.');
-    }
-  }
-
-  getAPIToken(): string {
-    return this.apiToken;
   }
 
   getCurrentUser(): string {

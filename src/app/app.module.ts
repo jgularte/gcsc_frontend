@@ -6,11 +6,15 @@ import {AppRoutingModule} from './app-routing.module';
 import {NavbarComponent} from './navbar/navbar.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
+import {UserProfileComponent} from './user-profile/user-profile.component';
+import {UserProfileSvgComponent} from './svg-icons/user-profile/user-profile-svg.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    NavbarComponent
+    NavbarComponent,
+    UserProfileComponent,
+    UserProfileSvgComponent
   ],
   imports: [
     BrowserModule,

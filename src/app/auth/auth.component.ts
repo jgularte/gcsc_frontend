@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {AuthService} from '../services/auth.service';
 import {Subscription} from 'rxjs';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-auth',
@@ -13,10 +14,11 @@ import {Subscription} from 'rxjs';
 export class AuthComponent implements OnInit {
 
   authForm: FormGroup;
+  successfulAuthSub = new Subscription();
   failedAuthSub = new Subscription();
   failedAuthWarningMsg = false;
 
-  constructor(private authService: AuthService) {
+  constructor(private authService: AuthService, private router: Router) {
     this.authForm = new FormGroup({});
   }
 
@@ -25,6 +27,11 @@ export class AuthComponent implements OnInit {
     this.failedAuthSub = this.authService.failedAuth
       .subscribe(() => {
         this.failedAuthWarningMsg = true;
+      });
+    // subscribe to the successful auth subject
+    this.successfulAuthSub = this.authService.successfulAuth
+      .subscribe(() => {
+        this.router.navigate(['/calendar']);
       });
     // init the auth form
     this.authForm = new FormGroup({
